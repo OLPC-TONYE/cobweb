@@ -73,6 +73,7 @@ public class CobwebApplication extends JFrame {
 	private JMenu foodMenu;
 
 	private JMenu agentMenu;
+	private JMenu diseaseMenu;
 
 	public static final String CONFIG_FILE_EXTENSION = ".xml";
 
@@ -197,9 +198,16 @@ public class CobwebApplication extends JFrame {
 		// Sub-menus created dynamically in #makeAgentFoodSelectMenu()
 		agentMenu = new JMenu("Select Agents");
 		foodMenu = new JMenu("Select Food");
+
+		diseaseMenu = new JMenu("Disease Menu");
+		diseaseMenu.add(new JMenuItem(setVaccinateMode));
+		diseaseMenu.add(new JMenuItem(setPPEMode));
+		diseaseMenu.add(new JMenuItem(setInfectMode));
+		diseaseMenu.add(new JMenuItem(setCureMode));
+
 		editMenu.add(new JMenuItem(setObservationMode));
 		editMenu.add(new JMenuItem(setModeStones));
-		editMenu.add(new JMenuItem(setVaccinateMode));
+		editMenu.add(diseaseMenu);
 		editMenu.add(agentMenu);
 		editMenu.add(foodMenu);
 		editMenu.add(new JSeparator());
@@ -544,6 +552,7 @@ public class CobwebApplication extends JFrame {
 
 
 		viewers.add(new LiveStats(simRunner));
+		viewers.add(new DiseaseMonitor(simRunner));
 
 		if (simRunner.getSimulation().simulationConfig.geneticParams.getGeneCount() != 0) {
 			GAChartOutput gaViewer = new GAChartOutput(
@@ -935,6 +944,30 @@ public class CobwebApplication extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			simulatorUI.displayPanel.setMouseMode(MouseMode.GiveVaccine);
+		}
+		private static final long serialVersionUID = 1L;
+	};
+
+	private Action setInfectMode = new AbstractAction("Infect") {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			simulatorUI.displayPanel.setMouseMode(MouseMode.InfectAgent);
+		}
+		private static final long serialVersionUID = 1L;
+	};
+
+	private Action setCureMode = new AbstractAction("Cure") {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			simulatorUI.displayPanel.setMouseMode(MouseMode.CureAgent);
+		}
+		private static final long serialVersionUID = 1L;
+	};
+
+	private Action setPPEMode = new AbstractAction("PPE") {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			simulatorUI.displayPanel.setMouseMode(MouseMode.GivePPE);
 		}
 		private static final long serialVersionUID = 1L;
 	};

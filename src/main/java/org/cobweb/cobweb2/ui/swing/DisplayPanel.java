@@ -265,7 +265,117 @@ public class DisplayPanel extends WaitableJComponent implements ComponentListene
 		}
 	}
 
+	private class PPEMouseListener extends Mouse {
+		DiseaseMutator localDiseaseMutator = simulation.diseaseMutator;
 
+		@Override
+		public boolean canClick(Location loc) {
+			return simulation.theEnvironment.hasAgent(loc);
+		}
+
+		@Override
+		boolean canSetOn(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			return simulation.theEnvironment.hasAgent(loc) && !localDiseaseMutator.isWearingPPE(localAgent);
+		}
+
+		@Override
+		boolean canSetOff(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			return simulation.theEnvironment.hasAgent(loc) && localDiseaseMutator.isWearingPPE(localAgent) ;
+		}
+
+		@Override
+		void setOn(Location loc) {
+			givePPE(loc);
+		}
+
+		@Override
+		void setOff(Location loc) {
+			removePPE(loc);
+		}
+
+
+		private void givePPE(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			localDiseaseMutator.equipPPE(localAgent);
+		}
+
+		private void removePPE(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			localDiseaseMutator.removePPE(localAgent);
+		}
+	}
+
+	private class CureMouseListener extends Mouse {
+		DiseaseMutator localDiseaseMutator = simulation.diseaseMutator;
+
+		@Override
+		public boolean canClick(Location loc) {
+			return simulation.theEnvironment.hasAgent(loc);
+		}
+
+		@Override
+		boolean canSetOn(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			return simulation.theEnvironment.hasAgent(loc) && localDiseaseMutator.isSick(localAgent);
+		}
+
+		@Override
+		boolean canSetOff(Location loc) {
+			return false;
+		}
+
+		@Override
+		void setOn(Location loc) {
+			cureAgent(loc);
+		}
+
+		@Override
+		void setOff(Location loc) {
+
+		}
+
+		private void cureAgent(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			localDiseaseMutator.heal(localAgent);
+		}
+	}
+
+	private class InfectMouseListener extends Mouse {
+		DiseaseMutator localDiseaseMutator = simulation.diseaseMutator;
+
+		@Override
+		public boolean canClick(Location loc) {
+			return simulation.theEnvironment.hasAgent(loc);
+		}
+
+		@Override
+		boolean canSetOn(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			return simulation.theEnvironment.hasAgent(loc) && !localDiseaseMutator.isSick(localAgent);
+		}
+
+		@Override
+		boolean canSetOff(Location loc) {
+			return false;
+		}
+
+		@Override
+		void setOn(Location loc) {
+			infectAgent(loc);
+		}
+
+		@Override
+		void setOff(Location loc) {
+
+		}
+
+		private void infectAgent(Location loc) {
+			Agent localAgent = simulation.theEnvironment.getAgent(loc);
+			localDiseaseMutator.infect(localAgent);
+		}
+	}
 
 	private class AgentMouseListener extends Mouse {
 
@@ -463,8 +573,17 @@ public class DisplayPanel extends WaitableJComponent implements ComponentListene
 			case Observe:
 				setMouse(new ObserveMouseListener());
 				break;
+			case CureAgent:
+				setMouse(new CureMouseListener());
+				break;
+			case InfectAgent:
+				setMouse(new InfectMouseListener());
+				break;
 			case GiveVaccine:
 				setMouse(new VaccineMouseListener());
+				break;
+			case GivePPE:
+				setMouse(new PPEMouseListener());
 				break;
 			default:
 				break;

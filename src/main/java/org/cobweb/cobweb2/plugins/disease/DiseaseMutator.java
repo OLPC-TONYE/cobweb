@@ -74,7 +74,14 @@ public class DiseaseMutator extends StatefulMutatorBase<DiseaseState> implements
 
 			sickCount[agent.getType()]++;
 
-			setAgentState(agent, new DiseaseState(agentParams, true, false, simulation.getTime()));
+			setAgentState(agent, new DiseaseState(agentParams, true, false, agentParams.wearingPPE, simulation.getTime()));
+		}else {
+
+			DiseaseAgentParams agentParams = params.agentParams[agent.getType()];
+
+			if(agentParams.wearingPPE) {
+				setAgentState(agent, new DiseaseState(agentParams, false, false, true, simulation.getTime()));
+			}
 		}
 
 	}
@@ -91,10 +98,10 @@ public class DiseaseMutator extends StatefulMutatorBase<DiseaseState> implements
 			sickCount[agent.getType()]++;
 
 			if (isVaccinated(agent)) {
-				setAgentState(agent, new DiseaseState(agentParams, true, true, simulation.getTime()));
+				setAgentState(agent, new DiseaseState(agentParams, true, true, agentParams.wearingPPE, simulation.getTime()));
 			}
 			else {
-				setAgentState(agent, new DiseaseState(agentParams, true, false, simulation.getTime()));
+				setAgentState(agent, new DiseaseState(agentParams, true, false, agentParams.wearingPPE, simulation.getTime()));
 			}
 		}
 	}
@@ -156,6 +163,14 @@ public class DiseaseMutator extends StatefulMutatorBase<DiseaseState> implements
 		if (!isSick(bumper))
 			return;
 
+		if(isWearingPPE(bumpee)
+				&& simulation.getRandom().nextFloat() < params.agentParams[te].ppeEffectiveness)
+			return;
+
+		if(isWearingPPE(bumper)
+				&& simulation.getRandom().nextFloat() < params.agentParams[tr].ppeEffectiveness)
+			return;
+
 		if (isVaccinated(bumpee)
 				&& simulation.getRandom().nextFloat() < getAgentState(bumpee).vaccineEffectiveness)
 			return;
@@ -181,14 +196,40 @@ public class DiseaseMutator extends StatefulMutatorBase<DiseaseState> implements
 		return hasAgentState(agent) && getAgentState(agent).vaccinated;
 	}
 
+	//
+	public boolean isWearingPPE(Agent agent) {
+		return hasAgentState(agent) && getAgentState(agent).wearingPPE;
+	}
+
 	public void vaccinate(Agent bumpee, float effectiveness) {
 		DiseaseAgentParams agentParams = params.agentParams[bumpee.getType()];
-		setAgentState(bumpee, new DiseaseState(agentParams, false, true, effectiveness));
+		setAgentState(bumpee, new DiseaseState(agentParams, false, true, effectiveness, isWearingPPE(bumpee), agentParams.ppeEffectiveness));
 	}
 
 	public void deVaccinate(Agent bumpee) {
 		DiseaseAgentParams agentParams = params.agentParams[bumpee.getType()];
-		setAgentState(bumpee, new DiseaseState(agentParams, false, false, 0.0f));
+		setAgentState(bumpee, new DiseaseState(agentParams, false, false, 0.0f, isWearingPPE(bumpee), agentParams.ppeEffectiveness));
+	}
+
+	//
+	public void heal(Agent agent) {
+		DiseaseAgentParams agentParams = params.agentParams[agent.getType()];
+		setAgentState(agent, new DiseaseState(agentParams, false, isVaccinated(agent), isWearingPPE(agent), simulation.getTime()));
+	}
+
+	public void infect(Agent agent) {
+		DiseaseAgentParams agentParams = params.agentParams[agent.getType()];
+		setAgentState(agent, new DiseaseState(agentParams, true, isVaccinated(agent), isWearingPPE(agent), simulation.getTime()));
+	}
+
+	public void equipPPE(Agent agent) {
+		DiseaseAgentParams agentParams = params.agentParams[agent.getType()];
+		setAgentState(agent, new DiseaseState(agentParams, isSick(agent), isVaccinated(agent), true, simulation.getTime()));
+	}
+
+	public void removePPE(Agent agent) {
+		DiseaseAgentParams agentParams = params.agentParams[agent.getType()];
+		setAgentState(agent, new DiseaseState(agentParams, isSick(agent), isVaccinated(agent), false, simulation.getTime()));
 	}
 
 	@Override

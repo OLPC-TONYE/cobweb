@@ -70,6 +70,20 @@ public class DiseaseAgentParams implements ResizableParam {
 	public int recoveryTime = 0;
 
 	/**
+	 * Checks if Agents is wearing PPE.
+	 */
+	@ConfXMLTag("wearingPPE")
+	@ConfDisplayName("Wearing PPE")
+	public boolean wearingPPE = false;
+
+	/**
+	 * Factor affecting chance this agent will get a disease from contact while using PPE.
+	 */
+	@ConfXMLTag("ppeEffectiveness")
+	@ConfDisplayName("PPE Effectiveness")
+	public float ppeEffectiveness = 1.0f;
+
+	/**
 	 * Agent types this agent can transmit the disease to.
 	 */
 	@ConfDisplayName("Transmit to")

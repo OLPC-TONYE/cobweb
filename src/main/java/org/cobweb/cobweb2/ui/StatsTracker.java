@@ -18,6 +18,40 @@ public class StatsTracker  {
 		this.simulation = simulation;
 	}
 
+	// Just for now
+
+	public long countDiseasedAgents() {
+		long totalDiseasedAgents = 0;
+		for(Agent a : simulation.theEnvironment.getAgents()) {
+			if(simulation.diseaseMutator.isSick(a)) {
+				totalDiseasedAgents += 1;
+			}
+		}
+		return totalDiseasedAgents;
+	}
+
+	public long countHealthyAgents() {
+		long totalDiseasedAgents = 0;
+		for(Agent a : simulation.theEnvironment.getAgents()) {
+			if(!simulation.diseaseMutator.isSick(a)) {
+				totalDiseasedAgents += 1;
+			}
+		}
+		return totalDiseasedAgents;
+	}
+
+	public long countVacinatedAgents() {
+		long totalVacinatedAgents = 0;
+		for(Agent a : simulation.theEnvironment.getAgents()) {
+			if(simulation.diseaseMutator.isVaccinated(a)) {
+				totalVacinatedAgents += 1;
+			}
+		}
+		return totalVacinatedAgents;
+	}
+
+	//	Just For Now
+
 	public long countAgentEnergy() {
 		long totalEnergy = 0;
 		for(Agent a : simulation.theEnvironment.getAgents()){
